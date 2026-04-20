@@ -2,26 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background-color: #FAFAFB;
+    color: #18191C;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .hero-glow {
+    background: radial-gradient(50% 50% at 50% 50%, rgba(138, 92, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0.8;
   }
 }

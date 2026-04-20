@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ProofShift
 
-## Getting Started
+**Turn Your Web2 Identity into a Web3 Proof Card**
 
-First, run the development server:
+ProofShift is a decentralized identity transformation tool designed to help developers and creatives move away from static, easily spoofed CVs and portfolios. It utilizes AI to extract relevant traits from traditional "Web2" files and mints a simulated "Web3-verifiable" user identity holding authenticated proof badges.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+![ProofShift Overview](https://via.placeholder.com/1200x600?text=ProofShift+-+Web2+to+Web3+Identity)
+
+## Problem Solved
+
+Current professional identity exists entirely on centralized platforms (LinkedIn, Twitter, institutional PDFs). You do not own your specific employment data, endorsements, or certificates—the platform does. Verification logic is completely manual, forcing recruiters and employers to "trust" the CV.
+
+## Why Web2 → Web3 Matters
+
+The internet is shifting from "read/write" (Web2) to "read/write/own" (Web3). By moving credentials from PDF databases to decentralized verifiable credentials, people completely own their reputation. ProofShift demonstrates how frictionless this transition can be:
+
+| Feature Dimension    | Web2 Paradigm           | Web3 Reality            |
+| -------------------- | ----------------------- | ----------------------- |
+| Storage              | Platform Silos          | Decentralized Wallets   |
+| Trust                | Manual Background Check | Cryptographic Proof     |
+| Identity Composition | Static File             | Dynamic Programmable ID |
+
+## How Gemini AI is Used
+
+*(Simulated within `lib/mockGemini.ts` for this Proof of Concept)*
+
+When the user uploads a resume, certificate, or provides a URL, the Gemini API extracts raw text, structures the underlying skills securely, maps past experiences to verification thresholds, and calculates an absolute "Credibility Score." This parsed data directly drives the configuration of the simulated zero-knowledge proof credentials.
+
+## Architecture Diagram
+
+```
+Upload → AI Extraction → Proof Generation → Identity Card → Share
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Accessibility (a11y)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The project adheres to modern web accessibility standards, ensuring inclusivity:
+- Keyboard navigability using focus-visible states across all interactive elements.
+- Semantic HTML tags (`<section>`, `<main>`) structure to assist screen reading navigation.
+- Minimum WCAG compliant contrast ratios on the dark cyperpunk palette.
+- Descriptive `aria-label` tags embedded within upload dropzones and core CTAs.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Security
 
-## Learn More
+ProofShift is constructed securely:
+- **Client-Side Validation:** Upload types are strictly guarded.
+- **Graceful Error Logic:** If AI processing fails or API quotas drop, a fallback state is rendered elegantly.
+- **No API Leakage:** Safe env-driven deployment patterns strictly partition client actions from AI processing logic (if connected to real Gemini).
 
-To learn more about Next.js, take a look at the following resources:
+## Future Improvements
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Connect to an actual Smart Contract (e.g., EAS - Ethereum Attestation Service) to permanently mint credentials on-chain.
+- Introduce zero-knowledge elements (zk-SNARKs) so users can prove they hold a certificate without strictly exposing personal data.
+- Plug live Gemini multimodal logic to process visual certificates dynamically.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Built for the Google Antigravity Challenge*
