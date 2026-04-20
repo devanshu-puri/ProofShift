@@ -1,24 +1,47 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { UploadCloud, FileText, Link as LinkIcon, BadgeCheck, Zap } from "lucide-react";
+import { UploadCloud, FileText, Link as LinkIcon, BadgeCheck, Zap, Briefcase } from "lucide-react";
 import { useState, useRef } from "react";
-import { generateIdentity, type IdentityData } from "@/lib/mockGemini";
+import { generateIdentityAndReview, type AdvancedIdentityData } from "@/lib/mockGemini";
 
-export default function UploadSection({ onComplete }: { onComplete: (data: IdentityData) => void }) {
+export default function UploadSection({ onComplete }: { onComplete: (data: AdvancedIdentityData) => void }) {
   const [status, setStatus] = useState<"idle" | "processing" | "error">("idle");
   const [stepData, setStepData] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
   const processingSteps = [
-    "Extracting skills using AI...",
-    "Verifying certificates...",
-    "Calculating credibility...",
-    "Creating decentralized identity...",
+    "Parsing resume capabilities...",
+    "Running contextual job match...",
+    "Calculating credibility matrix...",
+    "Finalizing advanced identity node...",
   ];
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      setErrorMsg("Validation Error: Please upload your resume strictly as a PDF.");
+      return;
+    }
+
+    setResumeFile(file);
+    setErrorMsg("");
+  };
+
+  const isUrlValid = linkedinUrl.length === 0 || linkedinUrl.includes("linkedin.com/");
+  const canSubmit = resumeFile !== null && isUrlValid;
 
   const handleSimulateUpload = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canSubmit) return;
+
     setStatus("processing");
 
     for (let i = 0; i < processingSteps.length; i++) {
@@ -27,7 +50,11 @@ export default function UploadSection({ onComplete }: { onComplete: (data: Ident
     }
 
     try {
-      const result = await generateIdentity();
+      const result = await generateIdentityAndReview({
+        resumeName: resumeFile.name,
+        linkedinUrl,
+        jobDescription
+      });
       onComplete(result);
     } catch {
       setStatus("error");
@@ -38,7 +65,7 @@ export default function UploadSection({ onComplete }: { onComplete: (data: Ident
     <section className="py-24 px-4 max-w-5xl mx-auto w-full" id="upload-section">
       <div className="text-center mb-16">
         <h2 className="text-4xl font-bold mb-4 text-zinc-900 tracking-tight">Initialize Your Transformation</h2>
-        <p className="text-lg text-zinc-500 max-w-2xl mx-auto">Securely upload your traditional documents. Our AI handles the extraction and formatting instantly without saving your data.</p>
+        <p className="text-lg text-zinc-500 max-w-2xl mx-auto">Securely upload your traditional documents. Our AI handles the extraction, matches against job roles, and builds your Web3 roadmap instantly.</p>
       </div>
 
       <motion.div 
@@ -49,40 +76,74 @@ export default function UploadSection({ onComplete }: { onComplete: (data: Ident
       >
         {status === "idle" && (
           <form onSubmit={handleSimulateUpload} className="flex flex-col gap-10">
+            
+            {errorMsg && (
+              <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl font-medium text-sm text-center">
+                {errorMsg}
+              </div>
+            )}
+
             <div 
-              className="border-2 border-dashed border-zinc-200 bg-zinc-50/50 rounded-2xl p-16 flex flex-col items-center justify-center text-center hover:bg-zinc-50 hover:border-purple-300 transition-colors cursor-pointer group"
+              className={`border-2 border-dashed ${resumeFile ? 'border-purple-400 bg-purple-50/50' : 'border-zinc-200 bg-zinc-50/50'} rounded-2xl p-16 flex flex-col items-center justify-center text-center hover:bg-zinc-50 hover:border-purple-300 transition-colors cursor-pointer group`}
               onClick={() => fileInputRef.current?.click()}
             >
-              <input type="file" className="hidden" ref={fileInputRef} aria-label="Upload Resume" />
+              <input type="file" className="hidden" ref={fileInputRef} aria-label="Upload Resume" accept=".pdf" onChange={handleFileChange} />
               <div className="w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
-                <UploadCloud className="w-10 h-10 text-purple-600" />
+                {resumeFile ? <FileText className="w-10 h-10 text-purple-600" /> : <UploadCloud className="w-10 h-10 text-purple-600" />}
               </div>
-              <h3 className="text-2xl font-bold text-zinc-900 mb-3 tracking-tight">Drag & drop your Web2 Identity</h3>
-              <p className="text-zinc-500 font-medium mb-8">Supports PDF (Resume), PNG/JPG (Certificate)</p>
+              <h3 className="text-2xl font-bold text-zinc-900 mb-2 tracking-tight">
+                {resumeFile ? "Resume Attached Successfully!" : "Drag & drop your Web2 Identity"}
+              </h3>
+              <p className="text-zinc-500 font-medium mb-6">
+                {resumeFile ? resumeFile.name : "Supports strictly PDF (Resume requirements enforced)"}
+              </p>
               
-              <div className="flex items-center gap-6 text-sm font-bold text-zinc-400">
-                <div className="flex items-center gap-2"><FileText className="w-4 h-4 text-purple-500" /> Resume</div>
-                <div className="w-1.5 h-1.5 rounded-full bg-zinc-200" />
-                <div className="flex items-center gap-2"><BadgeCheck className="w-4 h-4 text-blue-500" /> Certificate</div>
+              {!resumeFile && (
+                <div className="flex items-center gap-6 text-sm font-bold text-zinc-400">
+                  <div className="flex items-center gap-2"><FileText className="w-4 h-4 text-purple-500" /> Web2 Resumes</div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-zinc-200" />
+                  <div className="flex items-center gap-2"><BadgeCheck className="w-4 h-4 text-blue-500" /> Portfolios</div>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="relative flex-1 w-full">
+                <LinkIcon className={`absolute left-4 top-5 w-5 h-5 ${!isUrlValid ? 'text-red-400' : 'text-zinc-400'}`} />
+                <input 
+                  type="url" 
+                  value={linkedinUrl}
+                  onChange={(e) => setLinkedinUrl(e.target.value)}
+                  placeholder="Paste your LinkedIn URL (Optional)" 
+                  aria-label="LinkedIn URL"
+                  className={`w-full bg-zinc-50 border ${!isUrlValid ? 'border-red-300 focus:ring-red-500/10 focus:border-red-500' : 'border-zinc-200 focus:ring-purple-500/10 focus:border-purple-500'} rounded-2xl h-14 pl-12 pr-4 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-4 font-medium transition-all`}
+                />
+                {!isUrlValid && linkedinUrl.length > 0 && (
+                  <span className="text-xs text-red-500 font-bold mt-2 block pl-2">URL must contain "linkedin.com/"</span>
+                )}
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 items-center w-full">
-              <div className="relative flex-1 w-full">
-                <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
-                <input 
-                  type="url" 
-                  placeholder="Or paste your LinkedIn URL" 
-                  aria-label="LinkedIn URL"
-                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl py-4 pl-12 pr-4 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 font-medium transition-all"
-                />
-              </div>
+            <div className="relative w-full">
+              <Briefcase className="absolute left-4 top-5 w-5 h-5 text-zinc-400" />
+              <textarea
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder="Paste Target Job Description (Optional but recommended for analysis)"
+                aria-label="Job Description"
+                rows={4}
+                className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl py-4 pl-12 pr-4 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 font-medium transition-all resize-y"
+              />
+            </div>
+
+            <div className="flex justify-end">
               <button
                 type="submit"
+                disabled={!canSubmit}
                 aria-label="Start Processing"
-                className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-purple-600 text-white font-bold hover:bg-purple-700 transition-colors whitespace-nowrap shadow-md shadow-purple-600/20"
+                className={`px-10 py-4 rounded-2xl font-bold whitespace-nowrap transition-colors shadow-md ${canSubmit ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-purple-600/20' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none'}`}
               >
-                Launch Magic
+                Launch Magic & Review
               </button>
             </div>
           </form>

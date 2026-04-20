@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 import { Copy, Share2, CheckCircle2, ShieldCheck, Hexagon } from "lucide-react";
 import { useState } from "react";
-import { type IdentityData } from "@/lib/mockGemini";
+import { type IdentityProfile } from "@/lib/mockGemini";
 
-export default function IdentityCard({ data }: { data: IdentityData }) {
+export default function IdentityCard({ data }: { data: IdentityProfile }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
