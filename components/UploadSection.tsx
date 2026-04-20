@@ -119,7 +119,7 @@ export default function UploadSection({ onComplete }: { onComplete: (data: Advan
                   className={`w-full bg-zinc-50 border ${!isUrlValid ? 'border-red-300 focus:ring-red-500/10 focus:border-red-500' : 'border-zinc-200 focus:ring-purple-500/10 focus:border-purple-500'} rounded-2xl h-14 pl-12 pr-4 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-4 font-medium transition-all`}
                 />
                 {!isUrlValid && linkedinUrl.length > 0 && (
-                  <span className="text-xs text-red-500 font-bold mt-2 block pl-2">URL must contain "linkedin.com/"</span>
+                  <span className="text-xs text-red-500 font-bold mt-2 block pl-2">URL must contain &quot;linkedin.com/&quot;</span>
                 )}
               </div>
             </div>
